@@ -24,19 +24,10 @@ import com.google.android.gms.common.images.Size
 import com.google.mlkit.md.R
 import com.google.mlkit.md.camera.CameraSizePair
 import com.google.mlkit.md.camera.GraphicOverlay
-import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.barcode.Barcode
 
 /** Utility class to retrieve shared preferences. */
 object PreferenceUtils {
-
-  fun isAutoSearchEnabled(context: Context): Boolean =
-    getBooleanPref(context, R.string.pref_key_enable_auto_search, true)
-
-  fun isMultipleObjectsMode(context: Context): Boolean =
-    getBooleanPref(context, R.string.pref_key_object_detector_enable_multiple_objects, false)
-
-  fun isClassificationEnabled(context: Context): Boolean =
-    getBooleanPref(context, R.string.pref_key_object_detector_enable_classification, false)
 
   fun saveStringPreference(context: Context, @StringRes prefKeyId: Int, value: String?) {
     PreferenceManager.getDefaultSharedPreferences(context)
@@ -44,14 +35,6 @@ object PreferenceUtils {
       .putString(context.getString(prefKeyId), value)
       .apply()
   }
-
-  fun getConfirmationTimeMs(context: Context): Int =
-    when {
-      isMultipleObjectsMode(context) -> 300
-      isAutoSearchEnabled(context) ->
-        getIntPref(context, R.string.pref_key_confirmation_time_in_auto_search, 1500)
-      else -> getIntPref(context, R.string.pref_key_confirmation_time_in_manual_search, 500)
-    }
 
   fun getProgressToMeetBarcodeSizeRequirement(overlay: GraphicOverlay, barcode: Barcode): Float {
     val context = overlay.context
@@ -78,9 +61,6 @@ object PreferenceUtils {
     val cy = overlayHeight / 2
     return RectF(cx - boxWidth / 2, cy - boxHeight / 2, cx + boxWidth / 2, cy + boxHeight / 2)
   }
-
-  fun shouldDelayLoadingBarcodeResult(context: Context): Boolean =
-    getBooleanPref(context, R.string.pref_key_delay_loading_barcode_result, true)
 
   private fun getIntPref(context: Context, @StringRes prefKeyId: Int, defaultValue: Int): Int {
     val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)

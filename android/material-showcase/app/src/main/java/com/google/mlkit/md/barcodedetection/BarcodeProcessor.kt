@@ -27,8 +27,9 @@ import com.google.mlkit.md.camera.WorkflowModel
 import com.google.mlkit.md.camera.WorkflowModel.WorkflowState
 import com.google.mlkit.md.camera.FrameProcessorBase
 import com.google.mlkit.md.settings.PreferenceUtils
+import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.io.IOException
 
@@ -36,7 +37,9 @@ import java.io.IOException
 class BarcodeProcessor(graphicOverlay: GraphicOverlay, private val workflowModel: WorkflowModel) :
     FrameProcessorBase<List<Barcode>>() {
 
-    private val scanner = BarcodeScanning.getClient()
+    private val scanner = BarcodeScanning.getClient(
+        BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+    )
     private val cameraReticleAnimator: CameraReticleAnimator = CameraReticleAnimator(graphicOverlay)
 
     override fun detectInImage(image: InputImage): Task<List<Barcode>> =
@@ -75,15 +78,8 @@ class BarcodeProcessor(graphicOverlay: GraphicOverlay, private val workflowModel
                 workflowModel.setWorkflowState(WorkflowState.CONFIRMING)
             } else {
                 // Barcode size in the camera view is sufficient.
-                if (PreferenceUtils.shouldDelayLoadingBarcodeResult(graphicOverlay.context)) {
-                    val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodeInCenter)
-                    loadingAnimator.start()
-                    graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
-                    workflowModel.setWorkflowState(WorkflowState.SEARCHING)
-                } else {
-                    workflowModel.setWorkflowState(WorkflowState.DETECTED)
-                    workflowModel.detectedBarcode.setValue(barcodeInCenter)
-                }
+                workflowModel.setWorkflowState(WorkflowState.DETECTED)
+                workflowModel.detectedBarcode.setValue(barcodeInCenter)
             }
         }
         graphicOverlay.invalidate()
