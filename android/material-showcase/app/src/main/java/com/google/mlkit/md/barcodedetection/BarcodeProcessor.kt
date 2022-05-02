@@ -25,11 +25,10 @@ import com.google.mlkit.md.camera.CameraReticleAnimator
 import com.google.mlkit.md.camera.FrameProcessorBase
 import com.google.mlkit.md.camera.GraphicOverlay
 import com.google.mlkit.md.camera.WorkflowModel
-import com.google.mlkit.md.camera.WorkflowModel.WorkflowState
 import com.google.mlkit.md.settings.PreferenceUtils
-import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.io.IOException
 
@@ -68,17 +67,17 @@ class BarcodeProcessor(graphicOverlay: GraphicOverlay, private val workflowModel
         if (barcodeInCenter == null) {
             cameraReticleAnimator.start()
             graphicOverlay.add(BarcodeReticleGraphic(graphicOverlay, cameraReticleAnimator))
-            workflowModel.setWorkflowState(WorkflowState.DETECTING)
+            workflowModel.setWorkflowState(WorkflowModel.WorkflowState.DETECTING)
         } else {
             cameraReticleAnimator.cancel()
             val sizeProgress = PreferenceUtils.getProgressToMeetBarcodeSizeRequirement(graphicOverlay, barcodeInCenter)
             if (sizeProgress < 1) {
                 // Barcode in the camera view is too small, so prompt user to move camera closer.
                 graphicOverlay.add(BarcodeConfirmingGraphic(graphicOverlay, barcodeInCenter))
-                workflowModel.setWorkflowState(WorkflowState.CONFIRMING)
+                workflowModel.setWorkflowState(WorkflowModel.WorkflowState.CONFIRMING)
             } else {
                 // Barcode size in the camera view is sufficient.
-                workflowModel.setWorkflowState(WorkflowState.DETECTED)
+                workflowModel.setWorkflowState(WorkflowModel.WorkflowState.DETECTED)
                 workflowModel.detectedBarcode.setValue(barcodeInCenter)
             }
         }
@@ -92,7 +91,7 @@ class BarcodeProcessor(graphicOverlay: GraphicOverlay, private val workflowModel
             addUpdateListener {
                 if ((animatedValue as Float).compareTo(endProgress) >= 0) {
                     graphicOverlay.clear()
-                    workflowModel.setWorkflowState(WorkflowState.SEARCHED)
+                    workflowModel.setWorkflowState(WorkflowModel.WorkflowState.SEARCHED)
                     workflowModel.detectedBarcode.setValue(barcode)
                 } else {
                     graphicOverlay.invalidate()

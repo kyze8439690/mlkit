@@ -20,8 +20,7 @@ import android.app.Application
 import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import java.util.HashSet
-import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.common.Barcode
 
 /** View model for handling application workflow based on camera preview.  */
 class WorkflowModel(application: Application) : AndroidViewModel(application) {
