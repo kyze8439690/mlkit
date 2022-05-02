@@ -40,7 +40,7 @@ import java.io.IOException
 /** Demonstrates the barcode scanning workflow using camera preview.  */
 class LiveBarcodeScanningActivity : AppCompatActivity(), OnClickListener {
 
-    private lateinit var binding: ActivityLiveBarcodeBinding;
+    private lateinit var binding: ActivityLiveBarcodeBinding
     private var cameraSource: CameraSource? = null
     private var promptChipAnimator: AnimatorSet? = null
     private var workflowModel: WorkflowModel? = null
@@ -171,23 +171,26 @@ class LiveBarcodeScanningActivity : AppCompatActivity(), OnClickListener {
             }
         })
 
-        workflowModel?.detectedBarcode?.observe(this, { barcode ->
+        workflowModel?.detectedBarcode?.observe(this) { barcode ->
             if (barcode != null) {
                 setResult(RESULT_OK, Intent().putExtra("url", barcode.rawValue))
                 finish()
             }
-        })
+        }
     }
 }
 private const val TAG = "LiveBarcodeActivity"
 
-class QRCodeScanContract: ActivityResultContract<Unit, String?>() {
+class QRCodeScanContract: ActivityResultContract<Unit?, String?>() {
     override fun createIntent(context: Context, unit: Unit?) =
         Intent(context, LiveBarcodeScanningActivity::class.java)
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
         if (resultCode == AppCompatActivity.RESULT_OK && intent != null) {
-            return intent.getStringExtra("url")
+            val url = intent.getStringExtra("url")?.trim()
+            if (url?.isNotBlank() == true) {
+                return url
+            }
         }
         return null
     }

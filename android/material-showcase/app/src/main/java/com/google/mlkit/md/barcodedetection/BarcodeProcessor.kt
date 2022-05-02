@@ -22,10 +22,10 @@ import androidx.annotation.MainThread
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.md.InputInfo
 import com.google.mlkit.md.camera.CameraReticleAnimator
+import com.google.mlkit.md.camera.FrameProcessorBase
 import com.google.mlkit.md.camera.GraphicOverlay
 import com.google.mlkit.md.camera.WorkflowModel
 import com.google.mlkit.md.camera.WorkflowModel.WorkflowState
-import com.google.mlkit.md.camera.FrameProcessorBase
 import com.google.mlkit.md.settings.PreferenceUtils
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -54,7 +54,7 @@ class BarcodeProcessor(graphicOverlay: GraphicOverlay, private val workflowModel
 
         if (!workflowModel.isCameraLive) return
 
-        Log.d(TAG, "Barcode result size: ${results.size}")
+        // Log.d(TAG, "Barcode result size: ${results.size}")
 
         // Picks the barcode, if exists, that covers the center of graphic overlay.
 
