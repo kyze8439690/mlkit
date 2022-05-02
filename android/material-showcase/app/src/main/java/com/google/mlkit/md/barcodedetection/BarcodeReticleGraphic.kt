@@ -18,12 +18,11 @@ package com.google.mlkit.md.barcodedetection
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Paint.Style
 import android.graphics.RectF
 import androidx.core.content.ContextCompat
-import com.google.mlkit.md.camera.GraphicOverlay
 import com.google.mlkit.md.R
 import com.google.mlkit.md.camera.CameraReticleAnimator
+import com.google.mlkit.md.camera.GraphicOverlay
 
 /**
  * A camera reticle that locates at the center of canvas to indicate the system is active but has
@@ -40,7 +39,7 @@ internal class BarcodeReticleGraphic(overlay: GraphicOverlay, private val animat
     init {
         val resources = overlay.resources
         ripplePaint = Paint()
-        ripplePaint.style = Style.STROKE
+        ripplePaint.style = Paint.Style.STROKE
         ripplePaint.color = ContextCompat.getColor(context, R.color.reticle_ripple)
         rippleSizeOffset = resources.getDimensionPixelOffset(R.dimen.barcode_reticle_ripple_size_offset)
         rippleStrokeWidth = resources.getDimensionPixelOffset(R.dimen.barcode_reticle_ripple_stroke_width)

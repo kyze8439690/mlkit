@@ -59,5 +59,4 @@ class WorkflowModel(application: Application) : AndroidViewModel(application) {
     fun markCameraFrozen() {
         isCameraLive = false
     }
-
 }

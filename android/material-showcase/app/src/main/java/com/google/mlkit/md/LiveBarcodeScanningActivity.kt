@@ -131,45 +131,48 @@ class LiveBarcodeScanningActivity : AppCompatActivity(), OnClickListener {
 
         // Observes the workflow state changes, if happens, update the overlay view indicators and
         // camera preview state.
-        workflowModel!!.workflowState.observe(this, Observer { workflowState ->
-            if (workflowState == null || Objects.equal(currentWorkflowState, workflowState)) {
-                return@Observer
+        workflowModel!!.workflowState.observe(
+            this,
+            Observer { workflowState ->
+                if (workflowState == null || Objects.equal(currentWorkflowState, workflowState)) {
+                    return@Observer
+                }
+
+                currentWorkflowState = workflowState
+                Log.d(TAG, "Current workflow state: ${currentWorkflowState!!.name}")
+
+                val wasPromptChipGone = binding.bottomPromptChip.visibility == View.GONE
+
+                when (workflowState) {
+                    WorkflowState.DETECTING -> {
+                        binding.bottomPromptChip.visibility = View.VISIBLE
+                        binding.bottomPromptChip.setText(R.string.prompt_point_at_a_barcode)
+                        startCameraPreview()
+                    }
+                    WorkflowState.CONFIRMING -> {
+                        binding.bottomPromptChip.visibility = View.VISIBLE
+                        binding.bottomPromptChip.setText(R.string.prompt_move_camera_closer)
+                        startCameraPreview()
+                    }
+                    WorkflowState.SEARCHING -> {
+                        binding.bottomPromptChip.visibility = View.VISIBLE
+                        binding.bottomPromptChip.setText(R.string.prompt_searching)
+                        stopCameraPreview()
+                    }
+                    WorkflowState.DETECTED, WorkflowState.SEARCHED -> {
+                        binding.bottomPromptChip.visibility = View.GONE
+                        stopCameraPreview()
+                    }
+                    else -> binding.bottomPromptChip.visibility = View.GONE
+                }
+
+                val shouldPlayPromptChipEnteringAnimation =
+                    wasPromptChipGone && binding.bottomPromptChip.visibility == View.VISIBLE
+                promptChipAnimator?.let {
+                    if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
+                }
             }
-
-            currentWorkflowState = workflowState
-            Log.d(TAG, "Current workflow state: ${currentWorkflowState!!.name}")
-
-            val wasPromptChipGone = binding.bottomPromptChip.visibility == View.GONE
-
-            when (workflowState) {
-                WorkflowState.DETECTING -> {
-                    binding.bottomPromptChip.visibility = View.VISIBLE
-                    binding.bottomPromptChip.setText(R.string.prompt_point_at_a_barcode)
-                    startCameraPreview()
-                }
-                WorkflowState.CONFIRMING -> {
-                    binding.bottomPromptChip.visibility = View.VISIBLE
-                    binding.bottomPromptChip.setText(R.string.prompt_move_camera_closer)
-                    startCameraPreview()
-                }
-                WorkflowState.SEARCHING -> {
-                    binding.bottomPromptChip.visibility = View.VISIBLE
-                    binding.bottomPromptChip.setText(R.string.prompt_searching)
-                    stopCameraPreview()
-                }
-                WorkflowState.DETECTED, WorkflowState.SEARCHED -> {
-                    binding.bottomPromptChip.visibility = View.GONE
-                    stopCameraPreview()
-                }
-                else -> binding.bottomPromptChip.visibility = View.GONE
-            }
-
-            val shouldPlayPromptChipEnteringAnimation =
-                wasPromptChipGone && binding.bottomPromptChip.visibility == View.VISIBLE
-            promptChipAnimator?.let {
-                if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
-            }
-        })
+        )
 
         workflowModel?.detectedBarcode?.observe(this) { barcode ->
             if (barcode != null) {
@@ -181,7 +184,7 @@ class LiveBarcodeScanningActivity : AppCompatActivity(), OnClickListener {
 }
 private const val TAG = "LiveBarcodeActivity"
 
-class QRCodeScanContract: ActivityResultContract<Unit?, String?>() {
+class QRCodeScanContract : ActivityResultContract<Unit?, String?>() {
     override fun createIntent(context: Context, unit: Unit?) =
         Intent(context, LiveBarcodeScanningActivity::class.java)
 
@@ -194,5 +197,4 @@ class QRCodeScanContract: ActivityResultContract<Unit?, String?>() {
         }
         return null
     }
-
 }

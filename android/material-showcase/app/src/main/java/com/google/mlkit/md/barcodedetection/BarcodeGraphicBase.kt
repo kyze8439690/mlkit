@@ -20,21 +20,19 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.CornerPathEffect
 import android.graphics.Paint
-import android.graphics.Paint.Style
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import androidx.core.content.ContextCompat
-import com.google.mlkit.md.camera.GraphicOverlay
-import com.google.mlkit.md.camera.GraphicOverlay.Graphic
 import com.google.mlkit.md.R
+import com.google.mlkit.md.camera.GraphicOverlay
 import com.google.mlkit.md.settings.PreferenceUtils
 
-internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(overlay) {
+internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : GraphicOverlay.Graphic(overlay) {
 
     private val boxPaint: Paint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.barcode_reticle_stroke)
-        style = Style.STROKE
+        style = Paint.Style.STROKE
         strokeWidth = context.resources.getDimensionPixelOffset(R.dimen.barcode_reticle_stroke_width).toFloat()
     }
 
@@ -52,7 +50,7 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(ov
 
     val pathPaint: Paint = Paint().apply {
         color = Color.WHITE
-        style = Style.STROKE
+        style = Paint.Style.STROKE
         strokeWidth = boxPaint.strokeWidth
         pathEffect = CornerPathEffect(boxCornerRadius)
     }
@@ -64,9 +62,9 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) : Graphic(ov
         canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), scrimPaint)
         // As the stroke is always centered, so erase twice with FILL and STROKE respectively to clear
         // all area that the box rect would occupy.
-        eraserPaint.style = Style.FILL
+        eraserPaint.style = Paint.Style.FILL
         canvas.drawRoundRect(boxRect, boxCornerRadius, boxCornerRadius, eraserPaint)
-        eraserPaint.style = Style.STROKE
+        eraserPaint.style = Paint.Style.STROKE
         canvas.drawRoundRect(boxRect, boxCornerRadius, boxCornerRadius, eraserPaint)
         // Draws the box.
         canvas.drawRoundRect(boxRect, boxCornerRadius, boxCornerRadius, boxPaint)

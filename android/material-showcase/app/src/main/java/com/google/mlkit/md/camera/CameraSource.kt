@@ -483,7 +483,7 @@ class CameraSource(private val graphicOverlay: GraphicOverlay) {
                     val size = sizePair.preview
                     val diff =
                         abs(size.width - DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH) +
-                                abs(size.height - DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
+                            abs(size.height - DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT)
                     if (diff < minDiff) {
                         selectedPair = sizePair
                         minDiff = diff
